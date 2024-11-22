@@ -68,7 +68,7 @@ class BottomNavBar extends StatelessWidget {
               if (selectedIndex != 2) {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => const MasScreen()),
+                  MaterialPageRoute(builder: (context) => MasScreen()),
                 );
               }
             },
