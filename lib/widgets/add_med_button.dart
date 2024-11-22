@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../screens/add_medication_form_screen.dart';
+import '../screens/add_medication_page1.dart';
 
 class AddMedButton extends StatelessWidget {
   const AddMedButton({super.key});
@@ -11,7 +11,7 @@ class AddMedButton extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => AddMedicationFormScreen(),
+            builder: (context) =>const AddMedicationPage1(),
           ),
         );
       },

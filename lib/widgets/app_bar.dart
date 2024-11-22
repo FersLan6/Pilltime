@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 
 PreferredSizeWidget customAppBar() {
   return AppBar(
+    backgroundColor: Colors.green[600], // Fondo verde llamativo
     title: Row(
       children: [
         Image.asset(
-          'assets/pilltime.png', // Reemplaza con la ruta de tu logo
+          'assets/pilltime.png', // Ruta de tu logo
           height: 30,
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 10),
         const Text(
           'PillTime',
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
         ),
       ],
     ),
