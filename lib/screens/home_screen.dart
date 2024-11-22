@@ -32,51 +32,69 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
 
+    //Esto controla el color del fondo del logo
     return Scaffold(
-      appBar: customAppBar(),
+      appBar: customAppBar(
+        logoSize: 40, // Tamaño del logo
+        backgroundColor: const Color.fromARGB(255, 89, 197, 93), // Color claro para el fondo
+      ),
       body: Column(
         children: [
           const CalendarWidget(),
           const SizedBox(height: 16),
+          // Medicamentos para hoy
           Expanded(
             child: groupedMeds.isEmpty
-                ? const Center(child: Text('No hay medicamentos para hoy.'))
+                ? const Center(
+                    child: Text(
+                      'No hay medicamentos para hoy.',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  )
                 : ListView(
                     children: groupedMeds.entries.map((entry) {
                       String hora = entry.key;
                       List<Map<String, dynamic>> meds = entry.value;
 
-                      return Card(
+                      return Container(
                         margin: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 8),
-                        shape: RoundedRectangleBorder(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.green.shade50,
                           borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.green.shade200),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.green.shade100,
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                         ),
-                        elevation: 4,
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Hora: $hora',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Hora: $hora',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green,
                               ),
-                              const SizedBox(height: 8),
-                              ...meds.map((med) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 8.0),
-                                  child: Text(
-                                    '${med['nombre']} - Dosis: ${med['dosis']} - ${med['vecesAlDia']} veces al día',
-                                    style: const TextStyle(fontSize: 14),
-                                  ),
-                                );
-                              }).toList(),
-                            ],
-                          ),
+                            ),
+                            const SizedBox(height: 8),
+                            ...meds.map((med) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: Text(
+                                  '${med['nombre']} - Dosis: ${med['dosis']} - ${med['vecesAlDia']} veces al día',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                              );
+                            }).toList(),
+                          ],
                         ),
                       );
                     }).toList(),
@@ -91,9 +109,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   MaterialPageRoute(builder: (context) => AddMedicationPage1()),
                 );
               },
+              //Este controla codigo del boton agregar
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.yellow[100],
-                side: const BorderSide(color: Colors.blue, width: 1),
+                backgroundColor: Colors.green.shade200,
+                foregroundColor: Colors.white,
+                side: const BorderSide(color: Colors.green, width: 1),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -102,14 +122,16 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               child: const Text(
                 'AÑADIR MEDICAMENTOS',
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
           ),
           const SizedBox(height: 16),
         ],
       ),
-      bottomNavigationBar: const BottomNavBar(selectedIndex: 0),
+      bottomNavigationBar: BottomNavBar(
+        selectedIndex: 0,
+      ),
     );
   }
 

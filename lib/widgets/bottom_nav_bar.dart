@@ -5,33 +5,35 @@ import '../screens/mas_screen.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int selectedIndex;
-  const BottomNavBar({super.key, required this.selectedIndex});
+
+  const BottomNavBar({
+    super.key,
+    required this.selectedIndex,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return BottomAppBar(
-      color: Colors.green[300], // Fondo verde
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.green.shade100, // Fondo más claro
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1), // Sombra ligera
+            blurRadius: 10,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           // Botón Inicio
-          IconButton(
-            icon: Column(
-              mainAxisSize:
-                  MainAxisSize.min, // Ajusta el tamaño automáticamente
-              children: [
-                Image.asset('assets/icons/casa.png', height: 24),
-                const SizedBox(height: 2),
-                Text(
-                  'INICIO',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: selectedIndex == 0 ? Colors.white : Colors.black,
-                  ),
-                ),
-              ],
-            ),
-            onPressed: () {
+          _buildNavItem(
+            context,
+            iconPath: 'assets/icons/casa.png',
+            label: 'INICIO',
+            isSelected: selectedIndex == 0,
+            onTap: () {
               if (selectedIndex != 0) {
                 Navigator.pushReplacement(
                   context,
@@ -41,22 +43,12 @@ class BottomNavBar extends StatelessWidget {
             },
           ),
           // Botón Medicamentos
-          IconButton(
-            icon: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Image.asset('assets/icons/pastilla.png', height: 24),
-                const SizedBox(height: 2),
-                Text(
-                  'MEDICAMENTOS',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: selectedIndex == 1 ? Colors.white : Colors.black,
-                  ),
-                ),
-              ],
-            ),
-            onPressed: () {
+          _buildNavItem(
+            context,
+            iconPath: 'assets/icons/pastilla.png',
+            label: 'MEDICAMENTOS',
+            isSelected: selectedIndex == 1,
+            onTap: () {
               if (selectedIndex != 1) {
                 Navigator.pushReplacement(
                   context,
@@ -67,22 +59,12 @@ class BottomNavBar extends StatelessWidget {
             },
           ),
           // Botón Más
-          IconButton(
-            icon: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Image.asset('assets/icons/punto.png', height: 24),
-                const SizedBox(height: 2),
-                Text(
-                  'MÁS',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: selectedIndex == 2 ? Colors.white : Colors.black,
-                  ),
-                ),
-              ],
-            ),
-            onPressed: () {
+          _buildNavItem(
+            context,
+            iconPath: 'assets/icons/punto.png',
+            label: 'MÁS',
+            isSelected: selectedIndex == 2,
+            onTap: () {
               if (selectedIndex != 2) {
                 Navigator.pushReplacement(
                   context,
@@ -90,6 +72,45 @@ class BottomNavBar extends StatelessWidget {
                 );
               }
             },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem(
+    BuildContext context, {
+    required String iconPath,
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            margin: const EdgeInsets.only(top: 8),
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: isSelected ? Colors.green : Colors.transparent,
+              shape: BoxShape.circle,
+            ),
+            child: Image.asset(
+              iconPath,
+              height: 24,
+              color: isSelected ? Colors.white : Colors.black54,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              color: isSelected ? Colors.green : Colors.black54,
+            ),
           ),
         ],
       ),
