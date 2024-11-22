@@ -17,8 +17,11 @@ class BottomNavBar extends StatelessWidget {
           // Botón Inicio
           IconButton(
             icon: Column(
+              mainAxisSize:
+                  MainAxisSize.min, // Ajusta el tamaño automáticamente
               children: [
                 Image.asset('assets/icons/casa.png', height: 24),
+                const SizedBox(height: 2),
                 Text(
                   'INICIO',
                   style: TextStyle(
@@ -40,8 +43,10 @@ class BottomNavBar extends StatelessWidget {
           // Botón Medicamentos
           IconButton(
             icon: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Image.asset('assets/icons/pastilla.png', height: 24),
+                const SizedBox(height: 2),
                 Text(
                   'MEDICAMENTOS',
                   style: TextStyle(
@@ -64,8 +69,10 @@ class BottomNavBar extends StatelessWidget {
           // Botón Más
           IconButton(
             icon: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Image.asset('assets/icons/punto.png', height: 24),
+                const SizedBox(height: 2),
                 Text(
                   'MÁS',
                   style: TextStyle(
@@ -79,7 +86,7 @@ class BottomNavBar extends StatelessWidget {
               if (selectedIndex != 2) {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => MasScreen()),
+                  MaterialPageRoute(builder: (context) => const MasScreen()),
                 );
               }
             },

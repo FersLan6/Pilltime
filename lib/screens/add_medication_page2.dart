@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pilltime/screens/home_screen.dart';
 import '../screens/slidingTimePicker.dart';
 import '../main.dart';
 
@@ -52,7 +53,9 @@ class _AddMedicationPage2State extends State<AddMedicationPage2> {
     };
 
     // Guardar en la lista global
-    medicamentos.add(medicamento);
+    setState(() {
+      medicamentos.add(medicamento);
+    });
 
     // Mostrar mensaje de éxito
     ScaffoldMessenger.of(context).showSnackBar(
@@ -60,9 +63,11 @@ class _AddMedicationPage2State extends State<AddMedicationPage2> {
     );
 
     // Redirigir a la pantalla principal
-    Navigator.pop(context); // Regresa al formulario 1
-    Navigator.pop(
-        context); // Regresa a la pantalla anterior (Inicio o Medicamentos)
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const HomeScreen()),
+      (route) => false,
+    );
   }
 
   @override
@@ -107,25 +112,45 @@ class _AddMedicationPage2State extends State<AddMedicationPage2> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () async {
-                final newDate = await showDatePicker(
-                  context: context,
-                  initialDate: endDate ?? DateTime.now(),
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime(2101),
-                );
-                if (newDate != null) {
-                  setState(() {
-                    endDate = newDate;
-                  });
-                }
-              },
-              child: Text(
-                endDate != null
-                    ? 'Fecha seleccionada: ${endDate!.toLocal()}'.split(' ')[0]
-                    : 'Seleccionar fecha',
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  endDate != null
+                      ? 'Fecha seleccionada: ${endDate!.toLocal()}'
+                          .split(' ')[0]
+                      : 'Selecciona una fecha',
+                  style: const TextStyle(fontSize: 16),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    final newDate = await showDatePicker(
+                      context: context,
+                      initialDate: endDate ?? DateTime.now(),
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime(2101),
+                    );
+                    if (newDate != null) {
+                      setState(() {
+                        endDate = newDate;
+                      });
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.purple[50],
+                    side: const BorderSide(color: Colors.purple, width: 1),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  child: Text(
+                    endDate != null
+                        ? '${endDate!.day.toString().padLeft(2, '0')}-${endDate!.month.toString().padLeft(2, '0')}-${endDate!.year}'
+                        : 'Seleccionar Fecha',
+                    style: const TextStyle(fontSize: 14, color: Colors.purple),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 32),
             ElevatedButton(

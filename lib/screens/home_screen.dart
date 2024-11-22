@@ -5,9 +5,14 @@ import '../widgets/add_med_button.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../main.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     // Filtra medicamentos para el día actual
@@ -47,5 +52,11 @@ class HomeScreen extends StatelessWidget {
       ),
       bottomNavigationBar: const BottomNavBar(selectedIndex: 0),
     );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    setState(() {}); // Actualiza la lista de medicamentos al regresar
   }
 }
