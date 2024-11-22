@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../main.dart'; // Importar lista global
+import '../main.dart';
+import '../widgets/bottom_nav_bar.dart';
 
 class MedicamentoScreen extends StatelessWidget {
   const MedicamentoScreen({super.key});
@@ -24,6 +25,7 @@ class MedicamentoScreen extends StatelessWidget {
                 );
               },
             ),
+      bottomNavigationBar: const BottomNavBar(selectedIndex: 1),
     );
   }
 }
