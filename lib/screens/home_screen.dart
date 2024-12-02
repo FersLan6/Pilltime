@@ -36,7 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: customAppBar(
         logoSize: 40, // Tamaño del logo
-        backgroundColor: const Color.fromARGB(255, 89, 197, 93), // Color claro para el fondo
+        backgroundColor:
+            const Color.fromARGB(255, 89, 197, 93), // Color claro para el fondo
       ),
       body: Column(
         children: [

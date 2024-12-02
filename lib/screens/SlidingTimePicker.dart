@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 class SlidingTimePicker extends StatefulWidget {
   final TimeOfDay initialTime;
   final Function(TimeOfDay) onTimeChanged;
+  final bool isToday; // Indica si el día seleccionado es hoy
 
   const SlidingTimePicker({
     super.key,
     required this.initialTime,
     required this.onTimeChanged,
+    required this.isToday,
   });
 
   @override
@@ -16,20 +18,22 @@ class SlidingTimePicker extends StatefulWidget {
 }
 
 class _SlidingTimePickerState extends State<SlidingTimePicker> {
-  late int selectedHour; // Hora seleccionada (0-23)
-  late int selectedMinute; // Minuto seleccionado
-  late String period; // AM/PM basado en la hora
+  late int selectedHour;
+  late int selectedMinute;
 
   @override
   void initState() {
     super.initState();
     selectedHour = widget.initialTime.hour;
     selectedMinute = widget.initialTime.minute;
-    period = _getPeriod(selectedHour);
   }
 
   @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final currentHour = now.hour;
+    final currentMinute = now.minute;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -41,17 +45,25 @@ class _SlidingTimePickerState extends State<SlidingTimePicker> {
             ),
             itemExtent: 40,
             onSelectedItemChanged: (hour) {
+              if (widget.isToday && hour < currentHour) return; // Restringe horas pasadas
               setState(() {
                 selectedHour = hour;
-                period = _getPeriod(selectedHour); // Actualiza AM/PM
+                if (widget.isToday && selectedHour == currentHour) {
+                  // Ajusta los minutos automáticamente si es necesario
+                  selectedMinute = currentMinute;
+                }
               });
               _updateTime();
             },
             children: List.generate(24, (hour) {
+              final isDisabled = widget.isToday && hour < currentHour;
               return Center(
                 child: Text(
                   hour.toString().padLeft(2, '0'),
-                  style: const TextStyle(fontSize: 20),
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: isDisabled ? Colors.grey : Colors.black,
+                  ),
                 ),
               );
             }),
@@ -65,40 +77,35 @@ class _SlidingTimePickerState extends State<SlidingTimePicker> {
             ),
             itemExtent: 40,
             onSelectedItemChanged: (minute) {
+              if (widget.isToday &&
+                  selectedHour == currentHour &&
+                  minute < currentMinute) return; // Restringe minutos pasados
               setState(() {
                 selectedMinute = minute;
               });
               _updateTime();
             },
             children: List.generate(60, (minute) {
+              final isDisabled = widget.isToday &&
+                  selectedHour == currentHour &&
+                  minute < currentMinute;
               return Center(
                 child: Text(
                   minute.toString().padLeft(2, '0'),
-                  style: const TextStyle(fontSize: 20),
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: isDisabled ? Colors.grey : Colors.black,
+                  ),
                 ),
               );
             }),
-          ),
-        ),
-        // Indicador AM/PM
-        Expanded(
-          child: Center(
-            child: Text(
-              period,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
           ),
         ),
       ],
     );
   }
 
-  String _getPeriod(int hour) {
-    return (hour >= 0 && hour < 12) ? 'AM' : 'PM';
-  }
-
   void _updateTime() {
-    // Devuelve el tiempo actualizado
     widget.onTimeChanged(
       TimeOfDay(hour: selectedHour, minute: selectedMinute),
     );
