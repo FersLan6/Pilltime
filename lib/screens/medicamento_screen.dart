@@ -113,7 +113,7 @@ class _MedicamentoScreenState extends State<MedicamentoScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Medicamentos'),
-        backgroundColor: Colors.teal.shade400,
+        backgroundColor: const Color.fromARGB(255, 89, 197, 93), // Color claro para el fondo
       ),
       body: Container(
         decoration: const BoxDecoration(
