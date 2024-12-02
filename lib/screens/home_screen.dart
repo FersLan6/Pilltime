@@ -21,6 +21,32 @@ class _HomeScreenState extends State<HomeScreen> {
       return med['dias'][int.parse(today) - 1] == true;
     }).toList();
 
+    // Hora actual
+    final now = DateTime.now();
+
+    // Filtra los medicamentos para excluir los horarios pasados
+    todaysMeds = todaysMeds.map((med) {
+      final filteredHorarios = (med['horarios'] as List<String>).where((hora) {
+        final horarioParts = hora.split(':');
+        final hour = int.parse(horarioParts[0]);
+        final minute = int.parse(horarioParts[1].split(' ')[0]);
+        final isPM = hora.contains('PM') && hour != 12;
+        final medicationTime = DateTime(
+          now.year,
+          now.month,
+          now.day,
+          isPM ? hour + 12 : hour,
+          minute,
+        );
+        return medicationTime.isAfter(now);
+      }).toList();
+
+      return {
+        ...med,
+        'horarios': filteredHorarios,
+      };
+    }).where((med) => med['horarios'].isNotEmpty).toList();
+
     // Agrupa los medicamentos por hora
     Map<String, List<Map<String, dynamic>>> groupedMeds = {};
     for (var med in todaysMeds) {
@@ -32,12 +58,10 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
 
-    //Esto controla el color del fondo del logo
     return Scaffold(
       appBar: customAppBar(
         logoSize: 40, // Tamaño del logo
-        backgroundColor:
-            const Color.fromARGB(255, 89, 197, 93), // Color claro para el fondo
+        backgroundColor: const Color.fromARGB(255, 89, 197, 93), // Color claro para el fondo
       ),
       body: Column(
         children: [
@@ -48,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: groupedMeds.isEmpty
                 ? const Center(
                     child: Text(
-                      'No hay medicamentos para hoy.',
+                      'No hay medicamentos pendientes para hoy.',
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
@@ -110,7 +134,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   MaterialPageRoute(builder: (context) => AddMedicationPage1()),
                 );
               },
-              //Este controla codigo del boton agregar
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green.shade200,
                 foregroundColor: Colors.white,

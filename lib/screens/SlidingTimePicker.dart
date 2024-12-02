@@ -20,6 +20,7 @@ class SlidingTimePicker extends StatefulWidget {
 class _SlidingTimePickerState extends State<SlidingTimePicker> {
   late int selectedHour;
   late int selectedMinute;
+  bool hasExceededDay = false; // Verifica si se excedió al siguiente día
 
   @override
   void initState() {
@@ -45,21 +46,34 @@ class _SlidingTimePickerState extends State<SlidingTimePicker> {
             ),
             itemExtent: 40,
             onSelectedItemChanged: (hour) {
-              if (widget.isToday && hour < currentHour) return; // Restringe horas pasadas
+              if (widget.isToday && hour < currentHour) {
+                // Restringe horas pasadas si el día es hoy
+                return;
+              }
+
               setState(() {
                 selectedHour = hour;
+                hasExceededDay =
+                    selectedHour >= 24; // Detecta si se excedió el día
+                if (hasExceededDay) {
+                  selectedHour %= 24; // Ajusta la hora al rango de 0-23
+                }
+
                 if (widget.isToday && selectedHour == currentHour) {
-                  // Ajusta los minutos automáticamente si es necesario
+                  // Ajusta minutos automáticamente si es necesario
                   selectedMinute = currentMinute;
                 }
               });
               _updateTime();
             },
-            children: List.generate(24, (hour) {
-              final isDisabled = widget.isToday && hour < currentHour;
+            children: List.generate(48, (hour) {
+              final displayHour =
+                  hour % 24; // Asegura que las horas estén en el rango de 0-23
+              final isDisabled =
+                  widget.isToday && hour < currentHour && hour < 24;
               return Center(
                 child: Text(
-                  hour.toString().padLeft(2, '0'),
+                  displayHour.toString().padLeft(2, '0'),
                   style: TextStyle(
                     fontSize: 20,
                     color: isDisabled ? Colors.grey : Colors.black,
@@ -79,7 +93,11 @@ class _SlidingTimePickerState extends State<SlidingTimePicker> {
             onSelectedItemChanged: (minute) {
               if (widget.isToday &&
                   selectedHour == currentHour &&
-                  minute < currentMinute) return; // Restringe minutos pasados
+                  minute < currentMinute) {
+                // Restringe minutos pasados si el día es hoy
+                return;
+              }
+
               setState(() {
                 selectedMinute = minute;
               });
@@ -106,8 +124,10 @@ class _SlidingTimePickerState extends State<SlidingTimePicker> {
   }
 
   void _updateTime() {
+    final updatedHour = hasExceededDay ? selectedHour + 24 : selectedHour;
+
     widget.onTimeChanged(
-      TimeOfDay(hour: selectedHour, minute: selectedMinute),
+      TimeOfDay(hour: updatedHour % 24, minute: selectedMinute),
     );
   }
 }
