@@ -28,62 +28,63 @@ class _MedicamentoScreenState extends State<MedicamentoScreen> {
   }
 
   void _confirmDeleteMedicamento(int index) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: const Row(
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: const Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: Colors.red, size: 28),
+            SizedBox(width: 8),
+            Text('Confirmar eliminación',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          ],
+        ),
+        content: const Text(
+          '¿Estás seguro de que deseas eliminar este medicamento?',
+          style: TextStyle(fontSize: 16),
+        ),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Icon(Icons.warning_amber_rounded, color: Colors.red, size: 28),
-              SizedBox(width: 8),
-              Text('Confirmar eliminación', style: TextStyle(fontSize: 20)),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Cerrar el diálogo
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey.shade300,
+                  foregroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text('No', style: TextStyle(fontSize: 16)),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  _deleteMedicamento(index);
+                  Navigator.of(context).pop(); // Cerrar el diálogo
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text('Sí', style: TextStyle(fontSize: 16)),
+              ),
             ],
           ),
-          content: const Text(
-            '¿Estás seguro de que deseas eliminar este medicamento?',
-            style: TextStyle(fontSize: 16),
-          ),
-          actions: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Cerrar el diálogo
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey.shade300,
-                    foregroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text('No', style: TextStyle(fontSize: 16)),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    _deleteMedicamento(index);
-                    Navigator.of(context).pop(); // Cerrar el diálogo
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text('Sí', style: TextStyle(fontSize: 16)),
-                ),
-              ],
-            ),
-          ],
-        );
-      },
-    );
-  }
+        ],
+      );
+    },
+  );
+}
 
 
   void _deleteMedicamento(int index) {
@@ -112,8 +113,17 @@ class _MedicamentoScreenState extends State<MedicamentoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Medicamentos'),
-        backgroundColor: const Color.fromARGB(255, 89, 197, 93), // Color claro para el fondo
+        title: const Center(
+          child: Text(
+            'Medicamentos',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        backgroundColor: Colors.teal.shade400,
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -125,7 +135,6 @@ class _MedicamentoScreenState extends State<MedicamentoScreen> {
         ),
         child: Column(
           children: [
-            // Campo de búsqueda
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
@@ -141,9 +150,6 @@ class _MedicamentoScreenState extends State<MedicamentoScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 8),
-
-            // Lista de medicamentos
             Expanded(
               child: filteredMedicamentos.isEmpty
                   ? const Center(
@@ -162,7 +168,6 @@ class _MedicamentoScreenState extends State<MedicamentoScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          elevation: 4,
                           child: ListTile(
                             leading: CircleAvatar(
                               backgroundColor: Colors.teal.shade100,
@@ -171,14 +176,10 @@ class _MedicamentoScreenState extends State<MedicamentoScreen> {
                             title: Text(
                               med['nombre'],
                               style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
+                                  fontSize: 18, fontWeight: FontWeight.bold),
                             ),
                             subtitle: Text(
-                              'Dosis: ${med['dosis']} - ${med['vecesAlDia']} veces al día',
-                              style: const TextStyle(fontSize: 14),
-                            ),
+                                'Dosis: ${med['dosis']} - ${med['vecesAlDia']} veces al día'),
                             trailing: IconButton(
                               icon: const Icon(Icons.delete, color: Colors.red),
                               onPressed: () => _confirmDeleteMedicamento(index),

@@ -56,7 +56,19 @@ class _AddMedicationPage2State extends State<AddMedicationPage2> {
 
     // Mostrar mensaje de éxito
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Medicamento guardado exitosamente.')),
+      SnackBar(
+        content: const Text(
+          'Medicamento guardado correctamente.',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.teal.shade400,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        duration: const Duration(seconds: 1),
+      ),
     );
 
     // Redirigir a la pantalla principal
@@ -99,7 +111,8 @@ class _AddMedicationPage2State extends State<AddMedicationPage2> {
                     children: [
                       const Text(
                         'Selecciona los horarios:',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 16),
                       ...List.generate(
@@ -148,7 +161,8 @@ class _AddMedicationPage2State extends State<AddMedicationPage2> {
                     children: [
                       const Text(
                         'Fecha de finalización:',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
                       GestureDetector(
