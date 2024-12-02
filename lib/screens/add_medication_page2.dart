@@ -28,8 +28,7 @@ class _AddMedicationPage2State extends State<AddMedicationPage2> {
   @override
   void initState() {
     super.initState();
-    final now = TimeOfDay.now();
-    times = List.generate(widget.timesPerDay, (_) => now);
+    times = List.generate(widget.timesPerDay, (_) => TimeOfDay.now());
   }
 
   void saveMedication() {
@@ -53,9 +52,7 @@ class _AddMedicationPage2State extends State<AddMedicationPage2> {
     };
 
     // Guardar en la lista global
-    setState(() {
-      medicamentos.add(medicamento);
-    });
+    medicamentos.add(medicamento);
 
     // Mostrar mensaje de éxito
     ScaffoldMessenger.of(context).showSnackBar(
@@ -73,89 +70,102 @@ class _AddMedicationPage2State extends State<AddMedicationPage2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Configurar Horarios')),
-      body: SingleChildScrollView(
+      appBar: AppBar(
+        title: const Text('Configurar Horarios'),
+        backgroundColor: Colors.green.shade300,
+      ),
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
           children: [
             const Text(
               'Selecciona los horarios:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            // Generación de relojes deslizantes
+
+            // Horarios dinámicos
             ...List.generate(
               widget.timesPerDay,
-              (index) => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Horario ${index + 1}:',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 8),
-                  SlidingTimePicker(
-                    initialTime: times[index],
-                    onTimeChanged: (newTime) {
-                      setState(() {
-                        times[index] = newTime;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                ],
+              (index) => Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Horario ${index + 1}:',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    SlidingTimePicker(
+                      initialTime: times[index],
+                      onTimeChanged: (newTime) {
+                        setState(() {
+                          times[index] = newTime;
+                        });
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
+
+            const SizedBox(height: 16),
             const Text(
               'Fecha de finalización del tratamiento:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
+            GestureDetector(
+              onTap: () async {
+                final pickedDate = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime(2101),
+                );
+                if (pickedDate != null) {
+                  setState(() {
+                    endDate = pickedDate;
+                  });
+                }
+              },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(color: Colors.green.shade300),
+                ),
+                child: Text(
                   endDate != null
-                      ? 'Fecha seleccionada: ${endDate!.toLocal()}'
-                          .split(' ')[0]
+                      ? '${endDate!.day.toString().padLeft(2, '0')}-${endDate!.month.toString().padLeft(2, '0')}-${endDate!.year}'
                       : 'Selecciona una fecha',
                   style: const TextStyle(fontSize: 16),
                 ),
-                ElevatedButton(
-                  onPressed: () async {
-                    final newDate = await showDatePicker(
-                      context: context,
-                      initialDate: endDate ?? DateTime.now(),
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime(2101),
-                    );
-                    if (newDate != null) {
-                      setState(() {
-                        endDate = newDate;
-                      });
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purple[50],
-                    side: const BorderSide(color: Colors.purple, width: 1),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                  child: Text(
-                    endDate != null
-                        ? '${endDate!.day.toString().padLeft(2, '0')}-${endDate!.month.toString().padLeft(2, '0')}-${endDate!.year}'
-                        : 'Seleccionar Fecha',
-                    style: const TextStyle(fontSize: 14, color: Colors.purple),
-                  ),
-                ),
-              ],
+              ),
             ),
             const SizedBox(height: 32),
+
+            // Botón Guardar
             ElevatedButton(
               onPressed: saveMedication,
-              child: const Text('Guardar'),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                backgroundColor: Colors.green.shade400,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text(
+                'Guardar',
+                style: TextStyle(fontSize: 18),
+              ),
             ),
           ],
         ),
