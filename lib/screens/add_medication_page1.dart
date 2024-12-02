@@ -118,6 +118,7 @@ class _AddMedicationPage1State extends State<AddMedicationPage1> {
                                     flex: 1,
                                     child: DropdownButtonFormField<String>(
                                       value: _doseType,
+                                      isExpanded: true, // Asegura que no haya desbordamiento
                                       items: ['mg', 'ml', 'pastillas', 'cucharadas']
                                           .map((type) => DropdownMenuItem(
                                                 value: type,
