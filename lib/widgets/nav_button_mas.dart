@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../screens/mas_screen.dart';
 
 class NavButtonMas extends StatelessWidget {
+  const NavButtonMas({super.key});
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

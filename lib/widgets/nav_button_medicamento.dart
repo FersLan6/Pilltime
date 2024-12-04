@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../screens/medicamento_screen.dart';
 
 class NavButtonMedicamento extends StatelessWidget {
+  const NavButtonMedicamento({super.key});
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

@@ -118,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   style: const TextStyle(fontSize: 16),
                                 ),
                               );
-                            }).toList(),
+                            }),
                           ],
                         ),
                       );

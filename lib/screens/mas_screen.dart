@@ -5,6 +5,8 @@ import 'citas_screen.dart';
 import 'config_screen.dart';
 
 class MasScreen extends StatelessWidget {
+  const MasScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

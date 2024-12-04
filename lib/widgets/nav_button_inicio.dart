@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../screens/home_screen.dart';
 
 class NavButtonInicio extends StatelessWidget {
+  const NavButtonInicio({super.key});
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

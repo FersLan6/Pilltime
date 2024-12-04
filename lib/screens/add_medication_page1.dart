@@ -14,7 +14,7 @@ class _AddMedicationPage1State extends State<AddMedicationPage1> {
   final TextEditingController _doseController = TextEditingController();
   int _timesPerDay = 1;
   String? _doseType;
-  List<bool> _selectedDays = List.generate(7, (index) => false);
+  final List<bool> _selectedDays = List.generate(7, (index) => false);
 
   final _formKey = GlobalKey<FormState>();
 

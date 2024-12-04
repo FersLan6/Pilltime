@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CitasScreen extends StatelessWidget {
+  const CitasScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
