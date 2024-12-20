@@ -22,6 +22,3 @@ class PillTimeApp extends StatelessWidget {
     );
   }
 }
-
-// Lista global para medicamentos
-List<Map<String, dynamic>> medicamentos = [];

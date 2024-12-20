@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../main.dart';
+import '../helpers/database_helper.dart'; // Importa la base de datos
+import '../models/medicamento_model.dart'; // Importa el modelo de medicamento
 import '../widgets/bottom_nav_bar.dart';
 
 class MedicamentoScreen extends StatefulWidget {
@@ -10,102 +11,88 @@ class MedicamentoScreen extends StatefulWidget {
 }
 
 class _MedicamentoScreenState extends State<MedicamentoScreen> {
-  List<Map<String, dynamic>> filteredMedicamentos = medicamentos;
+  List<Medicamento> medicamentos = [];
+  List<Medicamento> filteredMedicamentos = [];
 
   @override
   void initState() {
     super.initState();
-    filteredMedicamentos = medicamentos;
+    _loadMedicamentos(); // Carga los medicamentos al iniciar
+  }
+
+  Future<void> _loadMedicamentos() async {
+    final loadedMedicamentos = await DatabaseHelper.instance.getMedicamentos();
+    setState(() {
+      medicamentos = loadedMedicamentos;
+      filteredMedicamentos = loadedMedicamentos;
+    });
   }
 
   void _filterMedicamentos(String query) {
     setState(() {
       filteredMedicamentos = medicamentos
-          .where((med) =>
-              med['nombre'].toLowerCase().contains(query.toLowerCase()))
+          .where((med) => med.nombre.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
 
-  void _confirmDeleteMedicamento(int index) {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: const Row(
-          children: [
-            Icon(Icons.warning_amber_rounded, color: Colors.red, size: 28),
-            SizedBox(width: 8),
-            Text('Confirmar eliminación',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          ],
-        ),
-        content: const Text(
-          '¿Estás seguro de que deseas eliminar este medicamento?',
-          style: TextStyle(fontSize: 16),
-        ),
-        actions: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  void _confirmDeleteMedicamento(int id) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Row(
             children: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Cerrar el diálogo
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey.shade300,
-                  foregroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text('No', style: TextStyle(fontSize: 16)),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  _deleteMedicamento(index);
-                  Navigator.of(context).pop(); // Cerrar el diálogo
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text('Sí', style: TextStyle(fontSize: 16)),
-              ),
+              Icon(Icons.warning_amber_rounded, color: Colors.red, size: 28),
+              SizedBox(width: 8),
+              Text('Confirmar eliminación',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             ],
           ),
-        ],
-      );
-    },
-  );
-}
-
-
-  void _deleteMedicamento(int index) {
-    setState(() {
-      medicamentos.removeAt(index);
-      filteredMedicamentos = medicamentos;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text(
-          'Medicamento eliminado correctamente.',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.teal.shade400,
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        duration: const Duration(seconds: 2),
-      ),
+          content: const Text(
+            '¿Estás seguro de que deseas eliminar este medicamento?',
+            style: TextStyle(fontSize: 16),
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Cerrar el diálogo
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey.shade300,
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text('No', style: TextStyle(fontSize: 16)),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    await DatabaseHelper.instance.deleteMedicamento(id);
+                    _loadMedicamentos(); // Recarga los medicamentos
+                    Navigator.of(context).pop(); // Cerrar el diálogo
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text('Sí', style: TextStyle(fontSize: 16)),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -155,7 +142,8 @@ class _MedicamentoScreenState extends State<MedicamentoScreen> {
                   ? const Center(
                       child: Text(
                         'No hay medicamentos guardados.',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style:
+                            TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     )
                   : ListView.builder(
@@ -174,15 +162,15 @@ class _MedicamentoScreenState extends State<MedicamentoScreen> {
                               child: const Icon(Icons.medical_services_outlined),
                             ),
                             title: Text(
-                              med['nombre'],
+                              med.nombre,
                               style: const TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.bold),
                             ),
                             subtitle: Text(
-                                'Dosis: ${med['dosis']} - ${med['vecesAlDia']} veces al día'),
+                                'Dosis: ${med.dosis} - Horarios: ${med.horarios.join(', ')}'),
                             trailing: IconButton(
                               icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () => _confirmDeleteMedicamento(index),
+                              onPressed: () => _confirmDeleteMedicamento(med.id!),
                             ),
                           ),
                         );

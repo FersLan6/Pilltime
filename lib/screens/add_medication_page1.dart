@@ -42,7 +42,6 @@ class _AddMedicationPage1State extends State<AddMedicationPage1> {
                 Expanded(
                   child: ListView(
                     children: [
-                      // Sección: Información básica
                       Card(
                         elevation: 4,
                         shape: RoundedRectangleBorder(
@@ -61,8 +60,6 @@ class _AddMedicationPage1State extends State<AddMedicationPage1> {
                                 ),
                               ),
                               const SizedBox(height: 16),
-
-                              // Campo: Nombre del medicamento
                               TextFormField(
                                 controller: _nameController,
                                 decoration: InputDecoration(
@@ -85,8 +82,6 @@ class _AddMedicationPage1State extends State<AddMedicationPage1> {
                                 },
                               ),
                               const SizedBox(height: 16),
-
-                              // Campo: Cantidad y tipo
                               Row(
                                 children: [
                                   Expanded(
@@ -118,7 +113,7 @@ class _AddMedicationPage1State extends State<AddMedicationPage1> {
                                     flex: 1,
                                     child: DropdownButtonFormField<String>(
                                       value: _doseType,
-                                      isExpanded: true, // Asegura que no haya desbordamiento
+                                      isExpanded: true,
                                       items: ['mg', 'ml', 'pastillas', 'cucharadas']
                                           .map((type) => DropdownMenuItem(
                                                 value: type,
@@ -149,8 +144,6 @@ class _AddMedicationPage1State extends State<AddMedicationPage1> {
                         ),
                       ),
                       const SizedBox(height: 16),
-
-                      // Sección: Frecuencia
                       Card(
                         elevation: 4,
                         shape: RoundedRectangleBorder(
@@ -195,8 +188,6 @@ class _AddMedicationPage1State extends State<AddMedicationPage1> {
                         ),
                       ),
                       const SizedBox(height: 16),
-
-                      // Sección: Días
                       Card(
                         elevation: 4,
                         shape: RoundedRectangleBorder(
@@ -242,10 +233,7 @@ class _AddMedicationPage1State extends State<AddMedicationPage1> {
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 16),
-
-                // Botón Continuar
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
@@ -272,7 +260,7 @@ class _AddMedicationPage1State extends State<AddMedicationPage1> {
                   ),
                   child: const Text('Continuar', style: TextStyle(fontSize: 18)),
                 ),
-                SizedBox(height: 30), // Añadimos más espacio
+                const SizedBox(height: 30),
               ],
             ),
           ),

@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import '../widgets/app_bar.dart';
 import '../widgets/calendar_widget.dart';
 import '../widgets/bottom_nav_bar.dart';
-import '../main.dart';
 import '../screens/add_medication_page1.dart';
+import '../helpers/database_helper.dart'; // Importa la base de datos
+import '../models/medicamento_model.dart'; // Importa el modelo de medicamento
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,44 +14,63 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  List<Medicamento> medicamentos = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMedicamentos(); // Carga los medicamentos al iniciar
+  }
+
+  Future<void> _loadMedicamentos() async {
+    final loadedMedicamentos = await DatabaseHelper.instance.getMedicamentos();
+    setState(() {
+      medicamentos = loadedMedicamentos;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Filtra y agrupa los medicamentos para el día actual
     String today = DateTime.now().weekday.toString();
-    List<Map<String, dynamic>> todaysMeds = medicamentos.where((med) {
-      return med['dias'][int.parse(today) - 1] == true;
+    List<Medicamento> todaysMeds = medicamentos.where((med) {
+      return med.dias[int.parse(today) - 1];
     }).toList();
 
-    // Hora actual
     final now = DateTime.now();
 
-    // Filtra los medicamentos para excluir los horarios pasados
-    todaysMeds = todaysMeds.map((med) {
-      final filteredHorarios = (med['horarios'] as List<String>).where((hora) {
-        final horarioParts = hora.split(':');
-        final hour = int.parse(horarioParts[0]);
-        final minute = int.parse(horarioParts[1].split(' ')[0]);
-        final isPM = hora.contains('PM') && hour != 12;
-        final medicationTime = DateTime(
-          now.year,
-          now.month,
-          now.day,
-          isPM ? hour + 12 : hour,
-          minute,
-        );
-        return medicationTime.isAfter(now);
-      }).toList();
+    todaysMeds = todaysMeds
+        .map((med) {
+          final filteredHorarios = med.horarios.where((hora) {
+            final horarioParts = hora.split(':');
+            final hour = int.parse(horarioParts[0]);
+            final minute = int.parse(horarioParts[1].split(' ')[0]);
+            final isPM = hora.contains('PM') && hour != 12;
+            final medicationTime = DateTime(
+              now.year,
+              now.month,
+              now.day,
+              isPM ? hour + 12 : hour,
+              minute,
+            );
+            return medicationTime.isAfter(now);
+          }).toList();
 
-      return {
-        ...med,
-        'horarios': filteredHorarios,
-      };
-    }).where((med) => med['horarios'].isNotEmpty).toList();
+          return Medicamento(
+            id: med.id,
+            nombre: med.nombre,
+            dosis: med.dosis,
+            dias: med.dias,
+            horarios: filteredHorarios,
+            fechaFin: med.fechaFin,
+            vecesAlDia: med.vecesAlDia, // Asegúrate de incluir este campo
+          );
+        })
+        .where((med) => med.horarios.isNotEmpty)
+        .toList();
 
-    // Agrupa los medicamentos por hora
-    Map<String, List<Map<String, dynamic>>> groupedMeds = {};
+    Map<String, List<Medicamento>> groupedMeds = {};
     for (var med in todaysMeds) {
-      for (var horario in med['horarios']) {
+      for (var horario in med.horarios) {
         if (!groupedMeds.containsKey(horario)) {
           groupedMeds[horario] = [];
         }
@@ -60,14 +80,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: customAppBar(
-        logoSize: 40, // Tamaño del logo
-        backgroundColor: const Color.fromARGB(255, 89, 197, 93), // Color claro para el fondo
+        logoSize: 40,
+        backgroundColor: const Color.fromARGB(255, 89, 197, 93),
       ),
       body: Column(
         children: [
           const CalendarWidget(),
           const SizedBox(height: 16),
-          // Medicamentos para hoy
           Expanded(
             child: groupedMeds.isEmpty
                 ? const Center(
@@ -80,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 : ListView(
                     children: groupedMeds.entries.map((entry) {
                       String hora = entry.key;
-                      List<Map<String, dynamic>> meds = entry.value;
+                      List<Medicamento> meds = entry.value;
 
                       return Container(
                         margin: const EdgeInsets.symmetric(
@@ -114,7 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               return Padding(
                                 padding: const EdgeInsets.only(bottom: 8.0),
                                 child: Text(
-                                  '${med['nombre']} - Dosis: ${med['dosis']} - ${med['vecesAlDia']} veces al día',
+                                  '${med.nombre} - Dosis: ${med.dosis}',
                                   style: const TextStyle(fontSize: 16),
                                 ),
                               );
@@ -131,8 +150,9 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => AddMedicationPage1()),
-                );
+                  MaterialPageRoute(
+                      builder: (context) => const AddMedicationPage1()),
+                ).then((_) => _loadMedicamentos());
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green.shade200,
@@ -153,15 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 16),
         ],
       ),
-      bottomNavigationBar: BottomNavBar(
-        selectedIndex: 0,
-      ),
+      bottomNavigationBar: const BottomNavBar(selectedIndex: 0),
     );
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    setState(() {}); // Actualiza la lista de medicamentos al regresar
   }
 }

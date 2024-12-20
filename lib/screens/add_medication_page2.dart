@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pilltime/screens/home_screen.dart';
+import '../helpers/database_helper.dart';
+import '../models/medicamento_model.dart';
+import 'home_screen.dart';
 import '../screens/slidingTimePicker.dart';
-import '../main.dart';
 
 class AddMedicationPage2 extends StatefulWidget {
   final String name;
@@ -31,7 +32,7 @@ class _AddMedicationPage2State extends State<AddMedicationPage2> {
     times = List.generate(widget.timesPerDay, (_) => TimeOfDay.now());
   }
 
-  void saveMedication() {
+  Future<void> saveMedication() async {
     if (endDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -41,16 +42,17 @@ class _AddMedicationPage2State extends State<AddMedicationPage2> {
       return;
     }
 
-    final medicamento = {
-      'nombre': widget.name,
-      'dosis': widget.dose,
-      'horarios': times.map((time) => time.format(context)).toList(),
-      'dias': widget.selectedDays,
-      'fechaFin': endDate?.toLocal().toString().split(' ')[0],
-      'vecesAlDia': widget.timesPerDay,
-    };
+    final medicamento = Medicamento(
+      id: DateTime.now().millisecondsSinceEpoch,
+      nombre: widget.name,
+      dosis: widget.dose,
+      horarios: times.map((time) => time.format(context)).toList(),
+      dias: widget.selectedDays,
+      fechaFin: endDate?.toIso8601String(),
+      vecesAlDia: widget.timesPerDay, // Incluye este campo
+    );
 
-    medicamentos.add(medicamento);
+    await DatabaseHelper.instance.insertMedicamento(medicamento);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -107,7 +109,8 @@ class _AddMedicationPage2State extends State<AddMedicationPage2> {
                           SlidingTimePicker(
                             initialTime: times[index],
                             isToday: widget.selectedDays[
-                                DateTime.now().weekday - 1], // Detecta si es hoy
+                                DateTime.now().weekday -
+                                    1], // Detecta si es hoy
                             onTimeChanged: (newTime) {
                               setState(() {
                                 times[index] = newTime;
