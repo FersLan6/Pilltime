@@ -27,22 +27,33 @@ class DatabaseHelper {
   }
 
   Future _createDB(Database db, int version) async {
-    const textType = 'TEXT NOT NULL';
-
     await db.execute('''
       CREATE TABLE medicamentos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nombre $textType,
-        dosis $textType,
-        dias $textType,
-        horarios $textType
+        nombre TEXT NOT NULL,
+        dosis TEXT NOT NULL,
+        dias TEXT NOT NULL,
+        horarios TEXT NOT NULL,
+        fechaFin TEXT NOT NULL,
+        vecesAlDia INTEGER NOT NULL
       )
-    ''');
+    '''
+    );
   }
 
   Future<int> insertMedicamento(Medicamento medicamento) async {
     final db = await instance.database;
     return await db.insert('medicamentos', medicamento.toMap());
+  }
+
+  Future<int> updateMedicamento(Medicamento medicamento) async {
+    final db = await instance.database;
+    return await db.update(
+      'medicamentos',
+      medicamento.toMap(),
+      where: 'id = ?',
+      whereArgs: [medicamento.id],
+    );
   }
 
   Future<List<Medicamento>> getMedicamentos() async {

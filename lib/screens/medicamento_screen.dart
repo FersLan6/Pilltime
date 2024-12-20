@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../helpers/database_helper.dart'; // Importa la base de datos
 import '../models/medicamento_model.dart'; // Importa el modelo de medicamento
 import '../widgets/bottom_nav_bar.dart';
+import 'edit_medication_page.dart'; // Importa la pantalla de edición
 
 class MedicamentoScreen extends StatefulWidget {
   const MedicamentoScreen({super.key});
@@ -31,9 +32,81 @@ class _MedicamentoScreenState extends State<MedicamentoScreen> {
   void _filterMedicamentos(String query) {
     setState(() {
       filteredMedicamentos = medicamentos
-          .where((med) => med.nombre.toLowerCase().contains(query.toLowerCase()))
+          .where(
+              (med) => med.nombre.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
+  }
+
+  void _confirmEditMedicamento(Medicamento medicamento) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            children: const [
+              Icon(Icons.edit, color: Colors.blue, size: 28),
+              SizedBox(width: 8),
+              Text(
+                'Confirmar edición',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          content: const Text(
+            '¿Estás seguro de que deseas editar este medicamento?',
+            style: TextStyle(fontSize: 16),
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Cierra el diálogo
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey.shade300,
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text('No', style: TextStyle(fontSize: 16)),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    Navigator.of(context).pop(); // Cierra el diálogo
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditMedicationPage(
+                          medicamento: medicamento,
+                        ),
+                      ),
+                    );
+                    if (result == true) {
+                      _loadMedicamentos(); // Recarga la lista si hubo cambios
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text('Sí', style: TextStyle(fontSize: 16)),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _confirmDeleteMedicamento(int id) {
@@ -142,8 +215,8 @@ class _MedicamentoScreenState extends State<MedicamentoScreen> {
                   ? const Center(
                       child: Text(
                         'No hay medicamentos guardados.',
-                        style:
-                            TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     )
                   : ListView.builder(
@@ -159,7 +232,8 @@ class _MedicamentoScreenState extends State<MedicamentoScreen> {
                           child: ListTile(
                             leading: CircleAvatar(
                               backgroundColor: Colors.teal.shade100,
-                              child: const Icon(Icons.medical_services_outlined),
+                              child:
+                                  const Icon(Icons.medical_services_outlined),
                             ),
                             title: Text(
                               med.nombre,
@@ -168,9 +242,22 @@ class _MedicamentoScreenState extends State<MedicamentoScreen> {
                             ),
                             subtitle: Text(
                                 'Dosis: ${med.dosis} - Horarios: ${med.horarios.join(', ')}'),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () => _confirmDeleteMedicamento(med.id!),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.edit,
+                                      color: Colors.blue),
+                                  onPressed: () =>
+                                      _confirmEditMedicamento(med),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete,
+                                      color: Colors.red),
+                                  onPressed: () =>
+                                      _confirmDeleteMedicamento(med.id!),
+                                ),
+                              ],
                             ),
                           ),
                         );
