@@ -39,6 +39,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   sqflite: ^2.2.0
   path: ^1.8.3
+  share_plus: ^10.1.3
 
 dev_dependencies:
   flutter_test:
@@ -68,6 +69,7 @@ flutter:
     - assets/citas.png
     - assets/config.png
     - assets/notas.png
+    - assets/apk/pilltime.apk
 
   # To add assets to your application, add an assets section, like this:
   # assets:
